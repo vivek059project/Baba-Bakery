@@ -19,7 +19,7 @@ function Navbar() {
           aria-label="Baba Bakery Home"
         >
           <img
-            src="/images/brand/baba-bakery-primary.png"
+            src="/images/baba-bakery-primary.png"
             alt="Baba Bakery"
             className="brand-logo"
           />
