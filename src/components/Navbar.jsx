@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Phone, Menu as MenuIcon, X } from "lucide-react";
+import {
+  Phone,
+  Menu as MenuIcon,
+  X,
+  ShoppingBag,
+} from "lucide-react";
+
+import { useCart } from "../context/CartContext";
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const { cartCount } = useCart();
 
   const closeMobileMenu = () => {
     setMobileOpen(false);
@@ -11,7 +20,11 @@ function Navbar() {
 
   return (
     <header className="navbar">
+
       <div className="navbar-container">
+
+        {/* BRAND */}
+
         <Link
           to="/"
           className="brand"
@@ -25,45 +38,145 @@ function Navbar() {
           />
         </Link>
 
+
+        {/* DESKTOP NAVIGATION */}
+
         <nav className="nav-links">
-          <Link to="/">Home</Link>
-          <Link to="/menu">Menu</Link>
-          <Link to="/custom-cake">Custom Cake</Link>
-          <Link to="/contact">Contact</Link>
-        </nav>
 
-        <a href="tel:+917742286710" className="nav-call">
-          <Phone size={17} />
-          <span>Call Us</span>
-        </a>
-
-        <button
-          className="mobile-menu-button"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileOpen}
-          onClick={() => setMobileOpen((current) => !current)}
-        >
-          {mobileOpen ? <X size={24} /> : <MenuIcon size={24} />}
-        </button>
-      </div>
-
-      {mobileOpen && (
-        <div className="mobile-nav">
-          <Link to="/" onClick={closeMobileMenu}>
+          <Link to="/">
             Home
           </Link>
 
-          <Link to="/menu" onClick={closeMobileMenu}>
+          <Link to="/menu">
             Menu
           </Link>
 
-          <Link to="/custom-cake" onClick={closeMobileMenu}>
+          <Link to="/custom-cake">
             Custom Cake
           </Link>
 
-          <Link to="/contact" onClick={closeMobileMenu}>
+          <Link to="/contact">
             Contact
           </Link>
+
+        </nav>
+
+
+        {/* ACTIONS */}
+
+        <div className="navbar-actions">
+
+          <Link
+            to="/cart"
+            className="nav-cart"
+            aria-label={`Shopping cart with ${cartCount} items`}
+          >
+            <ShoppingBag size={18} />
+
+            <span>
+              Cart
+            </span>
+
+            {cartCount > 0 && (
+              <span className="nav-cart-count">
+                {cartCount}
+              </span>
+            )}
+
+          </Link>
+
+
+          <a
+            href="tel:+917742286710"
+            className="nav-call"
+          >
+            <Phone size={17} />
+
+            <span>
+              Call Us
+            </span>
+          </a>
+
+        </div>
+
+
+        {/* MOBILE MENU BUTTON */}
+
+        <button
+          className="mobile-menu-button"
+          aria-label={
+            mobileOpen
+              ? "Close menu"
+              : "Open menu"
+          }
+          aria-expanded={mobileOpen}
+          onClick={() =>
+            setMobileOpen(
+              (current) => !current
+            )
+          }
+        >
+          {mobileOpen ? (
+            <X size={24} />
+          ) : (
+            <MenuIcon size={24} />
+          )}
+        </button>
+
+      </div>
+
+
+      {/* MOBILE NAVIGATION */}
+
+      {mobileOpen && (
+        <div className="mobile-nav">
+
+          <Link
+            to="/"
+            onClick={closeMobileMenu}
+          >
+            Home
+          </Link>
+
+          <Link
+            to="/menu"
+            onClick={closeMobileMenu}
+          >
+            Menu
+          </Link>
+
+          <Link
+            to="/custom-cake"
+            onClick={closeMobileMenu}
+          >
+            Custom Cake
+          </Link>
+
+          <Link
+            to="/contact"
+            onClick={closeMobileMenu}
+          >
+            Contact
+          </Link>
+
+
+          <Link
+            to="/cart"
+            onClick={closeMobileMenu}
+            className="mobile-cart"
+          >
+            <ShoppingBag size={17} />
+
+            Cart
+
+            {cartCount > 0 && (
+              <span className="mobile-cart-count">
+                {cartCount}
+              </span>
+            )}
+
+          </Link>
+
 
           <a
             href="tel:+917742286710"
@@ -73,8 +186,10 @@ function Navbar() {
             <Phone size={17} />
             Call Baba Bakery
           </a>
+
         </div>
       )}
+
     </header>
   );
 }

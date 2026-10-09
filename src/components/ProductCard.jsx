@@ -1,7 +1,15 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { useCart } from "../context/CartContext";
+
 function ProductCard({ product }) {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart(product, 1);
+  };
+
   return (
     <article className="product-card">
 
@@ -40,13 +48,27 @@ function ProductCard({ product }) {
             ₹{product.price}
           </strong>
 
-          <Link
-            to={`/menu/${product.id}`}
-            className="product-arrow"
-            aria-label={`View ${product.name}`}
-          >
-            <ArrowUpRight size={18} />
-          </Link>
+          <div className="product-card-actions">
+
+            <button
+              type="button"
+              className="product-add-button"
+              onClick={handleAddToCart}
+              aria-label={`Add ${product.name} to cart`}
+            >
+              <ShoppingBag size={16} />
+              Add
+            </button>
+
+            <Link
+              to={`/menu/${product.id}`}
+              className="product-arrow"
+              aria-label={`View ${product.name}`}
+            >
+              <ArrowUpRight size={18} />
+            </Link>
+
+          </div>
 
         </div>
 

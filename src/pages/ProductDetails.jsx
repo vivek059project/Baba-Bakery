@@ -4,10 +4,12 @@ import {
   ArrowLeft,
   Minus,
   Plus,
-  MessageCircle,
+  ShoppingBag,
+  CheckCircle,
 } from "lucide-react";
 
 import products from "../data/products";
+import { useCart } from "../context/CartContext";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -16,21 +18,20 @@ function ProductDetails() {
     (item) => item.id === Number(id)
   );
 
-  const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    orderType: "Pickup",
-    address: "",
-    preferredTime: "",
-    instructions: "",
-  });
+  const [quantity, setQuantity] = useState(1);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   if (!product) {
     return (
       <section className="product-not-found">
+
         <div>
-          <h1>Product not found</h1>
+
+          <h1>
+            Product not found
+          </h1>
 
           <p>
             Sorry, we couldn't find the item you're
@@ -43,80 +44,37 @@ function ProductDetails() {
           >
             Back to Menu
           </Link>
+
         </div>
+
       </section>
     );
   }
 
   const increaseQuantity = () => {
     setQuantity((current) => current + 1);
+    setAddedToCart(false);
   };
 
   const decreaseQuantity = () => {
     setQuantity((current) =>
       current > 1 ? current - 1 : 1
     );
+
+    setAddedToCart(false);
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    setFormData((current) => ({
-      ...current,
-      [name]: value,
-    }));
-  };
-
-  const handleWhatsApp = (event) => {
-    event.preventDefault();
-
-    const message = `
-Hello Baba Bakery,
-
-I would like to enquire about an order.
-
-Customer Name:
-${formData.name || "Not specified"}
-
-Item:
-${quantity} × ${product.name}
-
-Order Type:
-${formData.orderType}
-
-Preferred Time:
-${formData.preferredTime || "Not specified"}
-
-${
-  formData.orderType === "Delivery"
-    ? `Delivery Address:
-${formData.address || "Not specified"}`
-    : ""
-}
-
-Special Instructions:
-${formData.instructions || "None"}
-
-Please confirm availability, total price and ${
-      formData.orderType === "Delivery"
-        ? "delivery"
-        : "pickup"
-    } details.
-
-Thank you.
-    `.trim();
-
-    const whatsappUrl =
-      `https://wa.me/917742286710?text=` +
-      encodeURIComponent(message);
-
-    window.open(whatsappUrl, "_blank");
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+    setAddedToCart(true);
   };
 
   return (
     <div className="product-details-page">
 
       <div className="product-details-container">
+
+        {/* BACK TO MENU */}
 
         <Link
           to="/menu"
@@ -126,15 +84,18 @@ Thank you.
           Back to Menu
         </Link>
 
+
         <div className="product-details">
 
           {/* PRODUCT IMAGE */}
 
           <div className="product-details-image">
+
             <img
               src={product.image}
               alt={product.name}
             />
+
           </div>
 
 
@@ -194,126 +155,45 @@ Thank you.
             </div>
 
 
-            {/* ORDER ENQUIRY */}
+            {/* ADD TO CART */}
 
-            <form
-              className="product-order-form"
-              onSubmit={handleWhatsApp}
+            <button
+              type="button"
+              className="primary-button product-add-to-cart-button"
+              onClick={handleAddToCart}
             >
 
-              <div className="form-group">
-
-                <label htmlFor="name">
-                  Your name
-                </label>
-
-                <input
-                  id="name"
-                  type="text"
-                  name="name"
-                  placeholder="Enter your name"
-                  value={formData.name}
-                  onChange={handleChange}
-                />
-
-              </div>
-
-
-              <div className="form-group">
-
-                <label htmlFor="orderType">
-                  How would you like to receive it?
-                </label>
-
-                <select
-                  id="orderType"
-                  name="orderType"
-                  value={formData.orderType}
-                  onChange={handleChange}
-                >
-                  <option value="Pickup">
-                    Pickup from store
-                  </option>
-
-                  <option value="Delivery">
-                    Delivery
-                  </option>
-                </select>
-
-              </div>
-
-
-              {formData.orderType === "Delivery" && (
-                <div className="form-group">
-
-                  <label htmlFor="address">
-                    Delivery address
-                  </label>
-
-                  <textarea
-                    id="address"
-                    name="address"
-                    rows="3"
-                    placeholder="Enter your delivery address"
-                    value={formData.address}
-                    onChange={handleChange}
-                  />
-
-                </div>
+              {addedToCart ? (
+                <>
+                  <CheckCircle size={19} />
+                  Added to Cart
+                </>
+              ) : (
+                <>
+                  <ShoppingBag size={19} />
+                  Add to Cart
+                </>
               )}
 
-
-              <div className="form-group">
-
-                <label htmlFor="preferredTime">
-                  Preferred time
-                </label>
-
-                <input
-                  id="preferredTime"
-                  type="text"
-                  name="preferredTime"
-                  placeholder="e.g. 7:30 PM"
-                  value={formData.preferredTime}
-                  onChange={handleChange}
-                />
-
-              </div>
+            </button>
 
 
-              <div className="form-group">
+            {/* GO TO CART */}
 
-                <label htmlFor="instructions">
-                  Special instructions
-                </label>
-
-                <textarea
-                  id="instructions"
-                  name="instructions"
-                  rows="3"
-                  placeholder="Anything else we should know?"
-                  value={formData.instructions}
-                  onChange={handleChange}
-                />
-
-              </div>
-
-
-              <button
-                type="submit"
-                className="primary-button product-whatsapp-button"
+            {addedToCart && (
+              <Link
+                to="/cart"
+                className="product-view-cart-button"
               >
-                <MessageCircle size={19} />
-                Enquire on WhatsApp
-              </button>
-
-            </form>
+                View Cart
+              </Link>
+            )}
 
 
             <p className="product-note">
-              Your enquiry will open in WhatsApp.
-              Baba Bakery will confirm availability,
-              price and pickup or delivery details with you.
+              You can continue shopping and review
+              your complete order in the cart before
+              checkout.
             </p>
 
           </div>
